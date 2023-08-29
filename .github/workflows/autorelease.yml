@@ -62,7 +62,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           body: 
-            # ${{ env.RELEASE_VERSION }}
+            ${{ env.RELEASE_VERSION }} -
             Please refer to [README.md](https://github.com/omega1x/crta-box/README.md) for details
           files: ${{env.BINARY_NAME}}
         env:
