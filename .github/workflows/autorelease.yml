@@ -15,22 +15,34 @@ defaults:
     shell: bash
 
 jobs:
-  release:
-    name: Create Release
+  lint:
+    name: Lint Job
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4.1.0
+        with:
+          go-version: '1.19'
+          cache: false
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+  autorelease:
+    name: Release Job
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        os:
-          - linux
-          - windows
-        arch:
-          - amd64
+        goosarch:
+          - 'linux/amd64'
+          - 'windows/amd64'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v2
+      - name: Setup Go environment 
+        uses: actions/setup-go@v4.1.0
         with:
           go-version: '1.19'
       - name: Get OS and arch info
@@ -46,13 +58,12 @@ jobs:
         run: |
           go build -o "$BINARY_NAME" -v
       - name: Release Notes
-        run:
+        run: |
           git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an <%ae>' --no-merges >> ".github/RELEASE-TEMPLATE.md"
       - name: Release with Notes
         uses: softprops/action-gh-release@v1
         with:
           body_path: ".github/RELEASE-TEMPLATE.md"
-          draft: true
           files: ${{env.BINARY_NAME}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
