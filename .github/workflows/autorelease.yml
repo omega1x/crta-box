@@ -16,7 +16,7 @@ defaults:
 
 jobs:
   lint:
-    name: Lint Job
+    name: Checking Code Quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -28,8 +28,8 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
-  autorelease:
-    name: Release Job
+  release:
+    name: Automatic Release
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
@@ -62,8 +62,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           body: 
-            ${{ env.RELEASE_VERSION }} -
-            Please refer to [README.md](https://github.com/omega1x/crta-box/README.md) for details
+            `crta-box`-streamer *${{ env.RELEASE_VERSION }}* released! 
+            Please refer to [README.md](https://github.com/omega1x/crta-box/README.md) for description, installation instructions, and other details.
           files: ${{env.BINARY_NAME}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
