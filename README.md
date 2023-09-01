@@ -6,6 +6,10 @@ Industrial monitoring systems for power plants. Stream data from acoustic-based 
 
 ## Usage
 
+|![Usage Scheme](share/svg/usage-concept.svg)|
+|:--:|
+| **Figure**: `crta-box` usage concept|
+
 ### Basics
 
 To start streaming data from *CRTA-BOX* to *ClickHouse*-database execute
@@ -108,4 +112,5 @@ Then check installation:
 
 ## Change Log
 
-- *v.0.0.1* - first working binary
+- *v0.0.2* - solve some lint issues
+- *v0.0.1* - first working binary

@@ -62,7 +62,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           body: 
-            `crta-box`-streamer *${{ env.RELEASE_VERSION }}* released! 
+            *crta-box*-streamer *${{ env.RELEASE_VERSION }}* released! 
             Please refer to [README.md](https://github.com/omega1x/crta-box/README.md) for description, installation instructions, and other details.
           files: ${{env.BINARY_NAME}}
         env:

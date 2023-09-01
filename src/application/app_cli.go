@@ -8,7 +8,7 @@ import (
 var Cli = &cli.App{
 	Name:    "crta-box",
 	Usage:   "stream data from *culvert rupture telltale aggregation* boxes (*CRTA-BOX*es).",
-	Version: "0.0.1",
+	Version: "0.0.2",
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:   "log",
