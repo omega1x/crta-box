@@ -26,7 +26,7 @@ const (
 		,r_modbus			AS value_gain
 		,verh_modbus		AS value_high
 		,niz_modbus			AS value_low
-	FROM log_srta33 
+	FROM cache_log_srta33_view 
 		WHERE 
 				timestamp > %d 
 			AND timestamp < (
