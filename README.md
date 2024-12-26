@@ -112,6 +112,6 @@ Then check installation:
 
 ## Change Log
 
-- *v0.0.3* - unify revision-3.3 data source for all  current versions of *crta-boxes*
-- *v0.0.2* - solve some lint issues
-- *v0.0.1* - first working binary
+- *v0.0.3* - unify revision-3.3 data source for all  current versions of *crta-boxes*,
+- *v0.0.2* - solve some lint issues,
+- *v0.0.1* - first working binary.
