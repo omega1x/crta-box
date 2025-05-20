@@ -1,15 +1,16 @@
-package com
+package toolkit
 
 import (
 	"context"
 	"fmt"
 	"time"
 
-	clickhouse "github.com/ClickHouse/clickhouse-go/v2"
+	"github.com/ClickHouse/clickhouse-go/v2"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 )
 
-// Check connection with target ClickHouse-database
-func HousePingPingHouse(host string, port uint16, database string, username string, password string) error {
+func driverHouse(host string, port uint16, database string, username string, password string) (driver.Conn, context.Context, error) {
+
 	db, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{fmt.Sprintf("%s:%d", host, port)},
 		Auth: clickhouse.Auth{
@@ -32,13 +33,8 @@ func HousePingPingHouse(host string, port uint16, database string, username stri
 		BlockBufferSize:  10,
 	})
 	if err != nil {
-		return err
+		err = fmt.Errorf("fail connect to *ClickHouse*-database " + err.Error())
+		return nil, nil, err
 	}
-	defer db.Close()
-
-	err = db.Ping(context.Background())
-	if err != nil {
-		return err
-	}
-	return nil
+	return db, context.Background(), nil
 }

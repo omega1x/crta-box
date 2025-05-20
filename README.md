@@ -2,11 +2,13 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Industrial monitoring systems for power plants. Stream data from acoustic-based *culvert rupture telltale aggregation* boxes (*CRTA-BOX*es) (to target [ClickHouse](https://clickhouse.com/)-database).
+Industrial monitoring systems for power plants. Stream data from acoustic-based *culvert rupture telltale aggregation* boxes (*CRTA-BOX*es) to the dedicated [ClickHouse](https://clickhouse.com/)-database.
 
 ## Usage
 
-|![Usage Scheme](share/svg/usage-concept.svg)|
+### Concept
+
+|![Usage Scheme](.share/svg/usage-concept.svg)|
 |:--:|
 | **Figure**: `crta-box` usage concept|
 
@@ -24,7 +26,11 @@ where a full set of `<access-options>` could be listed by executing
 ./crta-box stream --help
 ```
 
-Optionally they could check access to *CRTA-BOX* with
+> [!WARNING]
+>
+> Although it is possible, streaming data from different *CRTA-BOX* servers to the same table in the *ClickHouse*-database is a bad practice. Use individual `house_table` for each running `crta-box stream` instance.
+
+Optionally they could check access to *CRTA-BOX* server with
 
 ```shell
 ./crta-box box <access-options>
@@ -42,7 +48,9 @@ where appropriate `<access-options>` could be listed with `--help`:
 ./crta-box box --help && ./crta-box house --help
 ```
 
-> &#8505; On *Windows&#8482;* use `.\crta-box.exe` command call.
+> [!NOTE]
+>
+> On *Windows&#8482;* use `.\crta-box.exe` command call.
 
 ### Logging
 
@@ -56,7 +64,29 @@ Enforce logging to file by adding `--log=<FILE>` option before command:
 
 ### Prerequisites
 
-For operability of `crta-box`, it is necessary not only to have valid access options but also the correct organization of the table structure in both communicating systems. While the data structure in *ClickHouse* can be drawn up from a [ch__create-table__log_box3.sql](share/house/ch__create-table__log_box3.sql), the structure of the tables in the *CRTA-BOX* is determined by the current version of the installed telltale boxes. In order to provide erroneous execution of `crta-box` there must be some data in *ClickHouse*-database that could be inserted by provided [ch__insert-table__log_box3.sql](share/house/ch__insert-table__log_box3.sql).
+For operability of `crta-box` command line utility, it is necessary not only to have valid access options but also the correct organization of the table structure in both communicating systems: a *CRTA-BOX* server and a [ClickHouse](https://clickhouse.com/docs/getting-started/quick-start))-database.
+
+#### View *box_view*
+
+All modifications of the *CRTA-BOX*es should have a unified `box_view`-view  that combines data from acoustic sensors of all possible versions (revisions).
+
+> [!NOTE]
+>
+>For the newest versions of *CRTA-BOX*, `box_view` is provided as an out-of-the-box feature by vendor.
+
+#### Database *BOXes*
+
+The receiver of data from *CRTA-BOX* server is the database named `BOXes` inside the ([ClickHouse](https://clickhouse.com/docs/getting-started/quick-start))-database, that contains individual tables mirroring the `box_view` for each instance of *CRTA-BOX* server. An example of a [ClickHouse](https://clickhouse.com/docs/getting-started/quick-start)-database deployment can be found in the [deploy-example.py](.share/ch/deploy-example.py)-script.
+
+> [!Note]
+>
+> Edit `HOST_IP` value in [deploy-example.py](.share/ch/deploy-example.py) before run it to make [ClickHouse](https://clickhouse.com/docs/getting-started/quick-start)-database reachable for the `crta-box stream` process.
+
+The structure of mirroring tables is provided in [create-table.sql](.share/ch/create-table.sql)-script. You may run the next command to organize example mirroring table:
+
+```bash
+clickhouse-client --host $HOST_IP --port 29000 --user user --password pass --queries-file .share/ch/create-table.sql 
+```
 
 ### Installation process
 
@@ -65,7 +95,7 @@ For operability of `crta-box`, it is necessary not only to have valid access opt
 Set the tag for the latest [Release](https://github.com/omega1x/crta-box/releases), i.e.:
 
 ```shell
-tag=v0.0.1
+tag=v0.1.0
 ```
 
 Install the tagged version:
@@ -89,29 +119,31 @@ Then check installation:
 
 #### Windows (amd64)
 
-Set the tag for the latest [Release](https://github.com/omega1x/crta-box/releases), i.e.:
+With [PowerShell](https://learn.microsoft.com/en-us/powershell/) set the tag for the latest [Release](https://github.com/omega1x/crta-box/releases), i.e.:
 
 ```powershell
-# powershell:
-$tag = "v0.0.1"
+$tag = "v0.1.0"
 ```
 
 Install the tagged version:
 
 ```powershell
-# powershell:
 Invoke-WebRequest -Uri "https://github.com/omega1x/crta-box/releases/download/$tag/crta-box-windows-amd64" -OutFile 'crta-box.exe'
 ```
 
 Then check installation:
 
 ```shell
-# powershell or cmd:
 ./crta-box.exe --version
 ```
 
 ## Change Log
 
-- *v0.0.3* - unify revision-3.3 data source for all  current versions of *crta-boxes*,
-- *v0.0.2* - solve some lint issues,
+- *v0.1.0* - significant changes and additions due to the need to transfer data from sensors of all previous revisions:
+  - data from *CRTA-BOX* server now is fetched from the unified `box_view`;
+  - fetched data is streamed to individual tables created for each of *CRTA-BOX*es
+  - pinging with `crta-box box` and `crta-box house` now can additionally show last record timestamps
+    performing the whole connectivity path check implicitly.
+- *v0.0.3* - unify sensor revision-gп3.3 data source for all current versions of *CRTA-BOX*es
+- *v0.0.2* - solve some lint issues.
 - *v0.0.1* - first working binary.
