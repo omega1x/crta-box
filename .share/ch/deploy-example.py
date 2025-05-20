@@ -13,7 +13,7 @@ from socket import gethostname
 from subprocess import run
 
 # GLOBAL CONFIGURATION
-DO_REDEPLOY = False  # if True it retransmits all previous deployments and starts the fresh one
+DO_REDEPLOY = False  # if True it removes all previous deployments and starts the fresh one
 HOST_IP = r'127.0.0.1' 
 PLATFORM_DATA_PATH = os.path.abspath(r'./platform-data')
 SCRIPT_EXIT_CODE = {r'OK' : 0, r'Unsuitable infrastructure': 1, r'System command fail': 2}
@@ -77,8 +77,8 @@ os.makedirs(PLATFORM_DATA_PATH, exist_ok=True)
 
 
 ### Run Click-House [https://clickhouse.com/docs]
-CLICKHOUSE_IMAGE_NAME = r'clickhouse/clickhouse-server:25.4'
-CLICKHOUSE_CONTAINER_NAME = r'clickhouse'
+CLICKHOUSE_IMAGE_NAME = r'clickhouse/clickhouse-server:25.4'  # set the actual version of the server here
+CLICKHOUSE_CONTAINER_NAME = r'clickhouse-server'
 
 put.info(f'Deploy service [{CLICKHOUSE_CONTAINER_NAME}] using [{CLICKHOUSE_IMAGE_NAME}] docker-image ...')
 
@@ -96,7 +96,7 @@ else:
 
     ch_data_path = os.path.join(CLICKHOUSE_HOST_PATH, r'data')
     ch_logs_path = os.path.join(CLICKHOUSE_HOST_PATH, r'log')
-    ch_conf_path = os.path.join(CLICKHOUSE_HOST_PATH, r'd')
+    ch_conf_path = os.path.join(CLICKHOUSE_HOST_PATH, r'conf.d')
     ch_user_path = os.path.join(CLICKHOUSE_HOST_PATH, r'users.d')
 
     put.info(f'Create necessary subdirectories in [{CLICKHOUSE_HOST_PATH}]')
